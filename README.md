@@ -25,6 +25,10 @@ KGM_Cables/
 └── run.py                  # Main entry point to start the Flask application
 ```
 
+## Flowchart
+
+![Flowchart](assets/cable_tv_flowchart.png)
+
 ## Features
 
 *   **Area-Based Targeting:** Allows the user to select a specific geographical area to send notifications to.
