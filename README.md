@@ -27,7 +27,13 @@ KGM_Cables/
 
 ## Flowchart
 
+<div align="center">
+
 ![Flowchart](assets/cable_tv_flowchart.png)
+
+*This flowchart illustrates the application's workflow, from user interaction to message delivery.* 
+
+</div>
 
 ## Features
 
