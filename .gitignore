@@ -9,3 +9,9 @@ __pycache__/
 
 # logs
 logs/
+
+# jupyter
+.ipynb_checkpoints/
+
+# text files
+*.txt
