@@ -98,3 +98,9 @@ KGM_Cables/
 3.  Choose a channel (SMS or WhatsApp).
 4.  Edit the message in the text box.
 5.  Click the "Send" button.
+
+<div align="center">
+  
+**Author: Arunaggiri pandian Karuannidhi**
+
+</div>
