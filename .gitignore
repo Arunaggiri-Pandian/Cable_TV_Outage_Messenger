@@ -18,3 +18,6 @@ logs/
 
 # data
 data/customers.csv
+
+# diagrams
+*.drawio
