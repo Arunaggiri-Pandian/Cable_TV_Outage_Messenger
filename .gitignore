@@ -12,6 +12,7 @@ logs/
 
 # jupyter
 .ipynb_checkpoints/
+*.ipynb
 
 # text files
 *.txt
