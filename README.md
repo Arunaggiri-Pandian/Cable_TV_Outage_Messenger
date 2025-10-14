@@ -2,6 +2,29 @@
 
 The KGM Cables Notification System is a simple, local web application designed for the owner of the KGM Cables television network. It provides a user-friendly interface to send bulk notifications to customers during a service outage.
 
+## Project Structure
+
+```
+KGM_Cables/
+├── app/                    # Main application folder
+│   ├── __init__.py         # Initializes the app, creates the Flask app instance
+│   └── routes.py           # Defines all backend API endpoints and business logic
+├── data/
+│   └── customers.csv       # Customer data file (name, phone, area)
+├── static/
+│   ├── css/
+│   │   └── style.css       # Stylesheet for the web interface
+│   └── js/
+│       └── script.js       # Frontend logic for interactivity and API calls
+├── templates/
+│   └── index.html          # Main HTML page for the user interface
+├── .env.example            # Example environment variables file
+├── .gitignore              # Specifies files and directories for Git to ignore
+├── pyproject.toml          # Project metadata and dependencies for uv
+├── README.md               # This file
+└── run.py                  # Main entry point to start the Flask application
+```
+
 ## Features
 
 *   **Area-Based Targeting:** Allows the user to select a specific geographical area to send notifications to.
@@ -35,7 +58,7 @@ The KGM Cables Notification System is a simple, local web application designed f
 3.  **Install the dependencies:**
     ```bash
     pip install uv
-    uv pip install -r requirements.txt
+    uv pip sync
     ```
 
 4.  **Create a `.env` file:**
@@ -75,26 +98,3 @@ The KGM Cables Notification System is a simple, local web application designed f
 3.  Choose a channel (SMS or WhatsApp).
 4.  Edit the message in the text box.
 5.  Click the "Send" button.
-
-## Project Structure
-
-```
-KGM_Cables/
-├── app/
-│   ├── __init__.py
-│   └── routes.py
-├── data/
-│   └── customers.csv
-├── static/
-│   ├── css/
-│   │   └── style.css
-│   └── js/
-│       └── script.js
-├── templates/
-│   └── index.html
-├── .env.example
-├── .gitignore
-├── pyproject.toml
-├── README.md
-└── run.py
-```
