@@ -101,6 +101,6 @@ KGM_Cables/
 
 <div align="center">
   
-**Author: Arunaggiri pandian Karuannidhi**
+**Author: Arunaggiri Pandian Karunanidhi**
 
 </div>
