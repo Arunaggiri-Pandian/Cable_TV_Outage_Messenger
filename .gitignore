@@ -21,3 +21,6 @@ data/customers.csv
 
 # diagrams
 *.drawio
+
+# notes
+whatsapp_notes.md
