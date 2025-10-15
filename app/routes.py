@@ -32,8 +32,15 @@ FROM_WA  = os.getenv("TWILIO_FROM_WHATSAPP")
 
 WC_TOKEN   = os.getenv("WHATSAPP_CLOUD_TOKEN")
 WC_PHONEID = os.getenv("WHATSAPP_CLOUD_PHONE_ID")
-WC_VER     = os.getenv("WHATSAPP_CLOUD_API_VERSION", "v20.0")
+WC_VER     = os.getenv("WHATSAPP_CLOUD_API_VERSION", "v22.0")
 USE_WC     = bool(WC_TOKEN and WC_PHONEID)
+
+# Pricing (server-side copy so audit logs record it)
+CURRENCY = os.getenv("CURRENCY", "INR")
+DEFAULT_PRICING_CATEGORY = os.getenv("DEFAULT_PRICING_CATEGORY", "utility").lower()
+PRICE_SERVICE   = float(os.getenv("PRICE_INR_SERVICE", "0"))
+PRICE_UTILITY   = float(os.getenv("PRICE_INR_UTILITY", "0"))
+PRICE_MARKETING = float(os.getenv("PRICE_INR_MARKETING", "0"))
 
 AUDIT_CSV  = Path("logs/sends.csv")
 AUDIT_CSV.parent.mkdir(exist_ok=True)
@@ -69,19 +76,31 @@ def compute_fingerprint(area: str, channel: str, message: str) -> str:
     h.update(area.encode()); h.update(channel.encode()); h.update(message.encode())
     return h.hexdigest()[:16]
 
+def unit_price_for(category: str) -> float:
+    c = (category or "").lower()
+    if c == "service":
+        return PRICE_SERVICE
+    if c == "marketing":
+        return PRICE_MARKETING
+    return PRICE_UTILITY  # default utility
+
 def append_audit(area: str, channel: str, count: int, sent: int, failed: int, fp: str,
-                 msg_type: str | None = None, eta: str | None = None):
+                 msg_type: str | None = None, eta: str | None = None,
+                 pricing_category: str | None = None, unit_price_inr: float | None = None,
+                 estimated_cost_inr: float | None = None):
     new = not AUDIT_CSV.exists()
     with AUDIT_CSV.open("a", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         if new:
             w.writerow([
                 "timestamp_iso", "area", "channel", "count", "sent", "failed", "fingerprint",
-                "msg_type", "eta"
+                "msg_type", "eta",
+                "pricing_category", "unit_price_inr", "estimated_cost_inr", "currency"
             ])
         w.writerow([
             datetime.utcnow().isoformat(), area, channel, count, sent, failed, fp,
-            msg_type or "", eta or ""
+            msg_type or "", eta or "",
+            (pricing_category or ""), (unit_price_inr or 0), (estimated_cost_inr or 0), CURRENCY
         ])
 
 def send_one_twilio(client: Client, to: str, channel: str, message: str) -> Tuple[str, bool, str]:
@@ -124,6 +143,18 @@ def send_one_whatsapp_cloud(to_e164: str, message: str) -> Tuple[str, bool, str]
 def index():
     return render_template("index.html")
 
+@bp.route("/api/public_config", methods=["GET"])
+def api_public_config():
+    return jsonify({
+        "currency": CURRENCY,
+        "default_pricing_category": DEFAULT_PRICING_CATEGORY,
+        "prices": {
+            "service": PRICE_SERVICE,
+            "utility": PRICE_UTILITY,
+            "marketing": PRICE_MARKETING
+        }
+    })
+
 @bp.route("/api/areas", methods=["GET"])
 def api_areas():
     try:
@@ -148,6 +179,8 @@ def api_send():
     eta_start = (data.get("eta_start") or "").strip()
     eta_end   = (data.get("eta_end") or "").strip()
     eta_str   = f"{eta_start}-{eta_end}" if (eta_start and eta_end) else ""
+    pricing_category = (data.get("pricing_category") or DEFAULT_PRICING_CATEGORY).lower()
+    unit_price = unit_price_for(pricing_category)
 
     if not area or not message or channel not in {"sms", "whatsapp"}:
         return jsonify({"error": "Need area, channel in {sms, whatsapp}, and message."}), 400
@@ -168,6 +201,7 @@ def api_send():
     fp = compute_fingerprint(area, channel, message)
 
     if dry_run:
+        est = unit_price * len(recipients)
         return jsonify({
             "dry_run": True,
             "area": area,
@@ -175,7 +209,11 @@ def api_send():
             "message_preview": message[:160],
             "count": len(recipients),
             "fingerprint": fp,
-            "whatsapp_backend": "cloud_api" if (channel=="whatsapp" and USE_WC) else "twilio"
+            "whatsapp_backend": "cloud_api" if (channel=="whatsapp" and USE_WC) else "twilio",
+            "pricing_category": pricing_category,
+            "unit_price_inr": unit_price,
+            "estimated_cost_inr": est,
+            "currency": CURRENCY
         })
 
     successes, failures = 0, 0
@@ -201,8 +239,10 @@ def api_send():
                 results.append({"to": to, "status": "sent" if ok else "error", "id_or_error": info})
                 time.sleep(0.03)
 
-    logger.info(f"[{fp}] area={area} channel={channel} type={msg_type} eta={eta_str} sent={successes} fail={failures}")
-    append_audit(area, channel, len(recipients), successes, failures, fp, msg_type or None, eta_str or None)
+    est_cost = unit_price * successes
+    logger.info(f"[{fp}] area={area} channel={channel} type={msg_type} eta={eta_str} sent={successes} fail={failures} category={pricing_category} unit={unit_price} est_cost={est_cost} {CURRENCY}")
+    append_audit(area, channel, len(recipients), successes, failures, fp,
+                 msg_type or None, eta_str or None, pricing_category, unit_price, est_cost)
 
     return jsonify({
         "dry_run": False,
@@ -213,5 +253,9 @@ def api_send():
         "failed": failures,
         "fingerprint": fp,
         "results_sample": results[:10],
-        "whatsapp_backend": "cloud_api" if (channel=="whatsapp" and USE_WC) else "twilio"
+        "whatsapp_backend": "cloud_api" if (channel=="whatsapp" and USE_WC) else "twilio",
+        "pricing_category": pricing_category,
+        "unit_price_inr": unit_price,
+        "estimated_cost_inr": est_cost,
+        "currency": CURRENCY
     })
