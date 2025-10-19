@@ -7,25 +7,21 @@ function fmtTime(hhmm) {
   return `${h12}:${m.toString().padStart(2, "0")} ${ampm}`;
 }
 
-function buildMessage({area, msgType, ta, en, etaStart, etaEnd}) {
-  const etaStr = (etaStart && etaEnd) ? `${fmtTime(etaStart)}–${fmtTime(etaEnd)}` : "";
+function buildMessage({area, msgType, ta, en, etaStart, etaEnd, customerName, accountId}) {
+  const etaStr = (etaStart && etaEnd) ? `${fmtTime(etaStart)}–${fmtTime(etaEnd)}` : "no ETA";
 
   let taTxt = "";
   if (ta) {
     taTxt = (msgType === "outage")
-      ? `அன்புள்ள வாடிக்கையாளர், ${area} பகுதியில் சேவை தடை ஏற்பட்டுள்ளது.` +
-        (etaStr ? ` மதிப்பிடப்பட்ட செயலிழப்பு நேரம் ${etaStr}.` : "") +
-        ` எங்கள் குழு விரைவில் சரிசெய்கிறது. சேவை மீண்டும் இயங்கும் போது தகவல் தரப்படும். – KGM Cables`
-      : `சிறந்த செய்தி: ${area} பகுதியில் சேவை மீண்டும் இயங்குகிறது. உங்கள் பொறுமைக்கு நன்றி. – KGM Cables`;
+      ? `வணக்கம் *${customerName}*,\n${area} பகுதியில் உள்ள உங்கள் KGM Cables இணைப்பு (கணக்கு : ${accountId}) சேவை தடையால் பாதிக்கப்பட்டுள்ளது.\nமதிப்பிடப்பட்ட செயலிழப்பு நேரம் *${etaStr}*.\nசேவை மீண்டும் இயங்கும்போது தகவல் தரப்படும்.\n- கேஜிஎம் கேபிள்ஸ்`
+      : `வணக்கம் *${customerName}*,\n${area} பகுதியில் உள்ள உங்கள் KGM Cables இணைப்பில் (கணக்கு : ${accountId}) சேவை மீண்டும் இயங்குகிறது.\nஉங்கள் பொறுமைக்கு நன்றி.\n- கேஜிஎம் கேபிள்ஸ்`;
   }
 
   let enTxt = "";
   if (en) {
     enTxt = (msgType === "outage")
-      ? `Dear customer, there is a service outage in ${area}.` +
-        (etaStr ? ` Estimated downtime ${etaStr}.` : "") +
-        ` Our team is working to restore it ASAP. We’ll notify you once it’s back. – KGM Cables`
-      : `Good news: service has been restored in ${area}. Thank you for your patience. – KGM Cables`;
+      ? `Hi *${customerName}*,\nYour KGM Cables connection (Account : ${accountId}) in ${area} is affected by a service outage.\nEstimated downtime *${etaStr}*.\nWe’ll message you once it’s restored.\n- KGM Cables`
+      : `Hi *${customerName}*,\nService has been restored for your KGM Cables connection (Account : ${accountId}) in ${area}.\nThank you for your patience.\n- KGM Cables`;
   }
 
   return (taTxt && enTxt) ? `${taTxt}\n\n${enTxt}` : (taTxt || enTxt);
@@ -186,13 +182,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function updateComposed() {
     const area = areaSel.value || "your area";
+    const customers = customersByArea[area] || [];
+    const firstCustomer = customers.length > 0 ? customers[0] : { name: "Customer", account_id: "SCV-XXXXX" };
+
     const composed = buildMessage({
       area,
       msgType: currentMsgType(),
       ta: langTamil.checked,
       en: langEng.checked,
       etaStart: etaStart.value,
-      etaEnd: etaEnd.value
+      etaEnd: etaEnd.value,
+      customerName: firstCustomer.name,
+      accountId: firstCustomer.account_id
     });
     msgBox.value = composed;
   }
@@ -211,11 +212,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Load areas and initialize estimates
   let lastRecipientCount = 0;
+  let customersByArea = {};
   try {
     const res = await fetch("/api/areas");
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Failed to load areas");
 
+    customersByArea = data.customers || {};
     areaSel.innerHTML = "";
     data.areas.forEach(a => {
       const opt = document.createElement("option");

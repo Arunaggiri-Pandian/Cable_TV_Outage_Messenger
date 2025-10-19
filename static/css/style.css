@@ -2,8 +2,8 @@
   --bg: #0b0f14;
   --card: #121821;
   --ink: #eef4ff;       /* brighter base text */
-  --muted: #c7d4e7;     /* brighter muted */
-  --label: #f16ff;     /* strong labels */
+  --muted: #8a9baf;     /* brighter muted */
+  --label: #f1f6ff;     /* strong labels */
   --line: #3a4964;
   --primary: #2f6feb;
   --success: #17351f;
@@ -13,7 +13,7 @@
   --pill: #192338;
   --input-bg: #131a24;
   --input-ink: #f6f9ff;
-  --placeholder: #c6d3e5;
+  --placeholder: #8a9baf;
 
   --header-bg-start: #0d1420;
   --header-bg-end: #0b0f14;
@@ -144,6 +144,10 @@ select, textarea, input[type="time"], input.form-control, .timepicker {
 }
 textarea::placeholder,
 input::placeholder { color: var(--placeholder); }
+
+.timepicker::placeholder {
+  color: var(--muted);
+}
 
 .row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
 

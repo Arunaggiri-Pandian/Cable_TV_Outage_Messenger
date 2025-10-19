@@ -53,8 +53,8 @@ def get_twilio_client() -> Client:
     return Client(sid, tok)
 
 def load_customers() -> pd.DataFrame:
-    df = pd.read_csv(CSV_PATH, dtype={"phone": "string", "area": "string", "name": "string"})
-    req = {"phone", "area"}
+    df = pd.read_csv(CSV_PATH, dtype={"phone": "string", "area": "string", "name": "string", "account_id": "string"})
+    req = {"phone", "area", "account_id"}
     missing = req - set(c.lower() for c in df.columns)
     if missing:
         raise ValueError(f"CSV missing required columns: {missing}")
@@ -63,6 +63,7 @@ def load_customers() -> pd.DataFrame:
         df["name"] = ""
     df["phone"] = df["phone"].astype(str).str.strip()
     df["area"]  = df["area"].astype(str).str.strip()
+    df["account_id"] = df["account_id"].astype(str).str.strip()
     return df
 
 def phone_for_channel(raw: str, channel: str, use_wc: bool) -> str:
@@ -160,8 +161,18 @@ def api_areas():
     try:
         df = load_customers()
         areas = sorted(a for a in df["area"].dropna().unique() if a)
+        
+        # Group customer data by area
+        customers_by_area = {}
+        for area_name, group in df.groupby("area"):
+            customers_by_area[area_name] = group.to_dict(orient="records")
+
         counts = df.groupby("area")["phone"].count().to_dict()
-        return jsonify({"areas": areas, "counts": counts})
+        return jsonify({
+            "areas": areas, 
+            "counts": counts,
+            "customers": customers_by_area
+        })
     except FileNotFoundError:
         return jsonify({"error": f"CSV not found at {CSV_PATH}"}), 404
     except Exception as e:
