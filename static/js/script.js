@@ -131,9 +131,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     const opts = { enableTime: true, noCalendar: true, dateFormat: "H:i", altInput: true, altFormat: "h:i K", time_24hr: false };
     flatpickr("#etaStart", opts);
     flatpickr("#etaEnd",   opts);
-  } else {
-    document.getElementById("etaStart").setAttribute("type","time");
-    document.getElementById("etaEnd").setAttribute("type","time");
+  }
+
+  const themeToggle = document.getElementById("themeToggle");
+  const themeIcon = document.querySelector('label[for="themeToggle"] i');
+
+  function setTheme(isLight) {
+    document.body.classList.toggle("light-mode", isLight);
+    themeIcon.className = isLight ? "bi bi-brightness-high-fill" : "bi bi-moon-stars-fill";
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+    if (themeToggle) themeToggle.checked = isLight;
+  }
+
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    setTheme(savedTheme === "light");
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener("change", () => {
+      setTheme(themeToggle.checked);
+    });
   }
 
   const areaSel   = document.getElementById("area");
