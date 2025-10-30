@@ -1,0 +1,133 @@
+<!-- Brand Header -->
+<header class="brand">
+  <div class="brand-left">
+    <button class="btn btn-outline-light btn-sm sidebar-toggle" (click)="toggleSidebar()">
+      <i class="bi bi-list"></i>
+    </button>
+    <div class="logo-wrap">
+      <img src="/assets/logo.png" alt="KGM Cables" />
+    </div>
+    <div class="brand-text">
+      <h1 class="m-0">KGM Cables</h1>
+      <div class="subtitle">Cable TV Messenger</div>
+    </div>
+  </div>
+  <div class="form-check form-switch ms-auto">
+    <input class="form-check-input" type="checkbox" id="themeToggle" (change)="toggleTheme()">
+    <label class="form-check-label" for="themeToggle">
+      <i class="bi bi-moon-stars-fill"></i>
+    </label>
+  </div>
+</header>
+
+<!-- Collapsible Sidebar -->
+<div class="offcanvas offcanvas-start text-bg-dark sidebar" [class.show]="sidebarOpen">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Settings & Info</h5>
+    <button type="button" class="btn-close btn-close-white" (click)="toggleSidebar()"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column">
+    <div class="sb-section">
+      <h6>Pricing</h6>
+      <div class="sb-row"><span>Category</span><span id="sbCategory">{{ pricing.defaultCategory | titlecase }}</span></div>
+      <div class="sb-row"><span>Rate</span><span id="sbRate">{{ unitPrice() | currency:pricing.currency:'symbol':'1.2-2' }} / delivered</span></div>
+    </div>
+
+    <div class="sb-section">
+      <h6>Run estimate</h6>
+      <div class="sb-row"><span>Recipients</span><span id="sbRecipients">{{ recipientCount }}</span></div>
+      <div class="sb-row strong"><span>Total</span><span id="sbTotal">{{ totalCost() | currency:pricing.currency:'symbol':'1.2-2' }}</span></div>
+    </div>
+
+    <div class="sb-grow"></div>
+    <div class="sb-footer">
+      <small class="sb-dev">©️reated by:<br/>Arunaggiri Pandian Karunanidhi</small>
+    </div>
+  </div>
+</div>
+
+<main class="container">
+  <section class="card">
+    <div class="grid">
+      <div>
+        <label for="area">Select Area</label>
+        <select id="area" [(ngModel)]="selectedArea" (change)="updateCount()">
+          <option *ngFor="let area of areas" [value]="area">{{ area }}</option>
+        </select>
+        <div id="areaCount" class="muted">{{ recipientCount }} recipient{{ recipientCount !== 1 ? 's' : '' }} in this area</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Options / Composer -->
+  <section class="card">
+    <div class="row w-100 justify-content-between" style="gap:0.75rem">
+      <div class="seg-wrap">
+        <input type="radio" class="btn-check" name="msgType" id="msgOutage" value="outage" [(ngModel)]="msgType" (change)="updateComposed()">
+        <label class="btn btn-seg" for="msgOutage">
+          <i class="bi bi-lightning-charge"></i> Outage
+        </label>
+
+        <input type="radio" class="btn-check" name="msgType" id="msgRestored" value="restored" [(ngModel)]="msgType" (change)="updateComposed()">
+        <label class="btn btn-seg" for="msgRestored">
+          <i class="bi bi-check-circle"></i> Restored
+        </label>
+      </div>
+
+      <div class="lang-wrap">
+        <input type="checkbox" class="btn-check" id="langTamil" [(ngModel)]="langTamil" (change)="updateComposed()">
+        <label class="btn btn-pill" for="langTamil">தமிழ்</label>
+
+        <input type="checkbox" class="btn-check" id="langEnglish" [(ngModel)]="langEnglish" (change)="updateComposed()">
+        <label class="btn btn-pill" for="langEnglish">EN</label>
+      </div>
+    </div>
+
+    <div class="w-100 mt-3">
+      <label class="muted strong-label">Estimated downtime (optional)</label>
+      <div class="d-flex gap-2 flex-wrap align-items-center">
+        <div class="input-group time-group">
+          <span class="input-group-text"><i class="bi bi-alarm"></i></span>
+          <input id="etaStart" class="form-control timepicker" placeholder="Start time" [(ngModel)]="etaStart" (change)="updateComposed()">
+        </div>
+        <div class="align-self-center muted">to</div>
+        <div class="input-group time-group">
+          <span class="input-group-text"><i class="bi bi-alarm"></i></span>
+          <input id="etaEnd" class="form-control timepicker" placeholder="End time" [(ngModel)]="etaEnd" (change)="updateComposed()">
+        </div>
+      </div>
+
+      <div class="quick-picks mt-2">
+        <button type="button" class="chip" (click)="applyQuickPick('plus_30m')">+30m</button>
+        <button type="button" class="chip" (click)="applyQuickPick('plus_1h')">+1h</button>
+        <button type="button" class="chip" (click)="applyQuickPick('plus_2h')">+2h</button>
+        <button type="button" class="chip" (click)="applyQuickPick('slot_14_16')">2–4 PM</button>
+        <button type="button" class="chip" (click)="applyQuickPick('slot_16_18')">4–6 PM</button>
+        <button type="button" class="chip" (click)="applyQuickPick('slot_22_01')">10 PM–1 AM</button>
+        <button type="button" class="chip danger" (click)="applyQuickPick('clear')">Clear</button>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+      <div class="form-check form-switch form-switch-lg">
+        <input class="form-check-input" type="checkbox" id="dryRun" [(ngModel)]="dryRun">
+        <label class="form-check-label" for="dryRun">Dry run (preview only)</label>
+        <i class="bi bi-question-circle help-icon ms-2"></i>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <label for="message">Composed Message (editable)</label>
+    <textarea id="message" rows="6" [(ngModel)]="composedMessage"></textarea>
+    <div class="muted" id="composeHint">
+      Auto-composed from your selections; you can still edit by hand.
+    </div>
+  </section>
+
+  <section class="actions">
+    <button id="sendBtn" (click)="sendMessage()" [disabled]="sending">{{ sending ? 'Sending...' : 'Send via WhatsApp' }}</button>
+  </section>
+
+  <section id="status" class="status" [ngClass]="status.kind" [innerHTML]="status.html"></section>
+</main>

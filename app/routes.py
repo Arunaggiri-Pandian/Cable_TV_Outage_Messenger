@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Tuple
 
 import httpx
 import pandas as pd
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, current_app, request, send_from_directory
 from twilio.rest import Client
 from datetime import datetime
 from pathlib import Path
@@ -140,9 +140,13 @@ def send_one_whatsapp_cloud(to_e164: str, message: str) -> Tuple[str, bool, str]
     except Exception as e:
         return to_e164, False, str(e)
 
-@bp.route("/", methods=["GET"])
-def index():
-    return render_template("index.html")
+@bp.route("/", defaults={"path": ""})
+@bp.route("/<path:path>")
+def serve(path):
+    if path != "" and os.path.exists(os.path.join(current_app.static_folder, path)):
+        return send_from_directory(current_app.static_folder, path)
+    else:
+        return send_from_directory(current_app.static_folder, "index.html")
 
 @bp.route("/api/public_config", methods=["GET"])
 def api_public_config():

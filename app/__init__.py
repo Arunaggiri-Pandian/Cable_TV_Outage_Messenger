@@ -6,8 +6,8 @@ def create_app() -> Flask:
     root = Path(__file__).resolve().parents[1]
     app = Flask(
         __name__,
-        static_folder=str(root / "static"),
-        template_folder=str(root / "templates"),
+        static_folder=str(root / "angular-app/dist/angular-app/browser"),
+        static_url_path='/',
     )
 
     # Ensure logs dir exists
