@@ -84,19 +84,22 @@
       <div class="row">
         <div class="col-md-6 mb-3 mb-md-0">
           <label><span class="step-badge">2</span>Message Type</label>
-          <!-- Segmented control (Outage / Restored) -->
-          <div class="seg-wrap mt-2">
-            <input type="radio" class="btn-check" name="msgType" id="msgOutage" value="outage">
-            <label class="btn btn-seg" for="msgOutage" data-bs-toggle="tooltip"
-                   data-bs-title="Sends a one-way outage alert to the selected area with optional ETA.">
-              <i class="bi bi-lightning-charge"></i> Outage
-            </label>
-
-            <input type="radio" class="btn-check" name="msgType" id="msgRestored" value="restored">
-            <label class="btn btn-seg" for="msgRestored" data-bs-toggle="tooltip"
-                   data-bs-title="Sends a one-way notice that service is restored for the selected area.">
-              <i class="bi bi-check-circle"></i> Restored
-            </label>
+          <div class="d-flex align-items-center mt-2">
+            <div class="modern-seg-control">
+              <input type="radio" class="btn-check" name="msgType" id="msgOutage" value="outage">
+              <label class="modern-seg-btn" for="msgOutage">
+                <i class="bi bi-lightning-charge"></i> Outage
+              </label>
+              <div class="seg-separator"></div>
+              <input type="radio" class="btn-check" name="msgType" id="msgRestored" value="restored">
+              <label class="modern-seg-btn" for="msgRestored">
+                <i class="bi bi-check-circle"></i> Restored
+              </label>
+            </div>
+            <i class="bi bi-question-circle help-icon ms-2"
+               id="msgTypeHelp"
+               data-bs-toggle="tooltip"
+               data-bs-title="Select this when a new service disruption occurs."></i>
           </div>
         </div>
 

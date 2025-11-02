@@ -188,8 +188,31 @@ document.addEventListener("DOMContentLoaded", async () => {
   const etaStart  = document.getElementById("etaStart");
   const etaEnd    = document.getElementById("etaEnd");
   const msgTypeRadios = document.querySelectorAll('input[name="msgType"]');
+  const msgTypeHelp = document.getElementById("msgTypeHelp");
   const channelRadios = document.querySelectorAll("input[name='channel']");
   const msgTypeLabel = document.querySelector("label[for='msg_type']");
+
+  // Tooltip content for the message type toggle
+  const msgTypeTooltips = {
+    outage: "Sends a one-way outage alert to the selected area with optional ETA.",
+    restored: "Sends a one-way notice that service is restored for the selected area."
+  };
+
+  // Function to update the tooltip content
+  function updateMsgTypeHelp() {
+    if (!msgTypeHelp) return;
+    const currentType = getCurrentMsgType();
+    const tooltipText = msgTypeTooltips[currentType];
+    
+    // Update the tooltip's title attribute
+    msgTypeHelp.setAttribute('data-bs-title', tooltipText);
+
+    // If the tooltip is already initialized by Bootstrap, you need to update it
+    const tooltipInstance = bootstrap.Tooltip.getInstance(msgTypeHelp);
+    if (tooltipInstance) {
+      tooltipInstance.setContent({ '.tooltip-inner': tooltipText });
+    }
+  }
 
   // Quick pick handlers
   document.querySelectorAll(".quick-picks .chip").forEach(btn => {
@@ -355,7 +378,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Compose interactions
-  msgTypeRadios.forEach(r => r.addEventListener("change", updateComposed));
+  msgTypeRadios.forEach(r => r.addEventListener("change", () => {
+    updateComposed();
+    updateMsgTypeHelp();
+  }));
   langTamil.addEventListener("change", updateComposed);
   langEng.addEventListener("change", updateComposed);
   etaStart.addEventListener("change", updateComposed);
@@ -368,6 +394,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Set initial state
   updateChannelUI();
   updateComposed();
+  updateMsgTypeHelp();
 
   // Send
   sendBtn.addEventListener("click", async () => {
