@@ -388,25 +388,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Send
   sendBtn.addEventListener("click", async () => {
     const area = areaChoices ? areaChoices.getValue(true) : "";
+    const msg_type = getCurrentMsgType();
+    const selectedLang = document.querySelector('input[name="lang"]:checked');
+
+    // --- VALIDATION ---
+    if (!area) {
+      setStatus("error", "Please select an area before sending.");
+      return;
+    }
+    if (!msg_type) {
+      setStatus("error", "Please select a message type (Outage or Restored).");
+      return;
+    }
+    if (!selectedLang) {
+      setStatus("error", "Please select a language before sending.");
+      return;
+    }
+
     const dry_run = dryRunChk.checked;
     const message = msgBox.value;
-    const msg_type = getCurrentMsgType();
     const channel = currentChannel();
     const eta_start = etaStart.value;
     const eta_end = etaEnd.value;
     const pricing_category = pricing.defaultCategory;
     
-    const selectedLang = document.querySelector('input[name="lang"]:checked')?.value;
     const langs = {
-        en: selectedLang === 'en' || selectedLang === 'both',
-        ta: selectedLang === 'ta' || selectedLang === 'both'
+        en: selectedLang.value === 'en' || selectedLang.value === 'both',
+        ta: selectedLang.value === 'ta' || selectedLang.value === 'both'
     };
-
-    if (!area) {
-        // This function doesn't exist, so I'm replacing it with a standard alert.
-        alert('Please select an area first.');
-        return;
-    }
 
     const payload = { area, channel, message, msg_type, dry_run, eta_start, eta_end, pricing_category, langs };
 
