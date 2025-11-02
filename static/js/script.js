@@ -7,24 +7,50 @@ function fmtTime(hhmm) {
   return `${h12}:${m.toString().padStart(2, "0")} ${ampm}`;
 }
 
-function buildMessage({area, msgType, ta, en, etaStart, etaEnd, customerName, accountId}) {
+function buildMessage({area, msgType, ta, en, etaStart, etaEnd, customerName}) {
   const etaStr = (etaStart && etaEnd) ? `${fmtTime(etaStart)}–${fmtTime(etaEnd)}` : "no ETA";
 
   let taTxt = "";
   if (ta) {
     taTxt = (msgType === "outage")
-      ? `வணக்கம் *${customerName}*,\n${area} பகுதியில் உள்ள உங்கள் KGM Cables இணைப்பு (கணக்கு : ${accountId}) சேவை தடையால் பாதிக்கப்பட்டுள்ளது.\nமதிப்பிடப்பட்ட செயலிழப்பு நேரம் *${etaStr}*.\nசேவை மீண்டும் இயங்கும்போது தகவல் தரப்படும்.\n- கேஜிஎம் கேபிள்ஸ்`
-      : `வணக்கம் *${customerName}*,\n${area} பகுதியில் உள்ள உங்கள் KGM Cables இணைப்பில் (கணக்கு : ${accountId}) சேவை மீண்டும் இயங்குகிறது.\nஉங்கள் பொறுமைக்கு நன்றி.\n- கேஜிஎம் கேபிள்ஸ்`;
+      ? `வணக்கம் *${customerName}*,\n${area} பகுதியில் உள்ள உங்கள் KGM Cables இணைப்பு சேவை தடையால் பாதிக்கப்பட்டுள்ளது.\nமதிப்பிடப்பட்ட செயலிழப்பு நேரம் *${etaStr}*.\nசேவை மீண்டும் இயங்கும்போது தகவல் தரப்படும்.\n- கேஜிஎம் கேபிள்ஸ்`
+      : `வணக்கம் *${customerName}*,\n${area} பகுதியில் உள்ள உங்கள் KGM Cables இணைப்பில் சேவை மீண்டும் இயங்குகிறது.\nஉங்கள் பொறுமைக்கு நன்றி.\n- கேஜிஎம் கேபிள்ஸ்`;
   }
 
   let enTxt = "";
   if (en) {
     enTxt = (msgType === "outage")
-      ? `Hi *${customerName}*,\nYour KGM Cables connection (Account : ${accountId}) in ${area} is affected by a service outage.\nEstimated downtime *${etaStr}*.\nWe’ll message you once it’s restored.\n- KGM Cables`
-      : `Hi *${customerName}*,\nService has been restored for your KGM Cables connection (Account : ${accountId}) in ${area}.\nThank you for your patience.\n- KGM Cables`;
+      ? `Hi *${customerName}*,\nYour KGM Cables connection in ${area} is affected by a service outage.\nEstimated downtime *${etaStr}*.\nWe’ll message you once it’s restored.\n- KGM Cables`
+      : `Hi *${customerName}*,\nService has been restored for your KGM Cables connection in ${area}.\nThank you for your patience.\n- KGM Cables`;
   }
 
   return (taTxt && enTxt) ? `${taTxt}\n\n${enTxt}` : (taTxt || enTxt);
+}
+
+function buildTemplatePreview({area, msgType, etaStart, etaEnd, customerName, ta, en}) {
+    const etaStr = (etaStart && etaEnd) ? `${fmtTime(etaStart)}–${fmtTime(etaEnd)}` : "{{3}}";
+    const name = customerName || "{{1}}";
+    const areaName = area || "{{2}}";
+
+    let enTxt = "";
+    if (en) {
+        if (msgType === "restored") {
+            enTxt = `Service Update\nHi ${name},\nService has been restored for your Cable TV connection in ${areaName}.\nThank you for your patience.\n\n- KGM Cables`;
+        } else {
+            enTxt = `Service Outage\nHi ${name},\nYour Cable connection in ${areaName} is affected by a service outage.\nEstimated downtime is ${etaStr}.\nWe’ll message you once it is restored.\n\n- KGM Cables`;
+        }
+    }
+
+    let taTxt = "";
+    if (ta) {
+        if (msgType === "restored") {
+            taTxt = `சேவை அறிவிப்பு\nவணக்கம் ${name},\n${areaName} பகுதியில் உள்ள உங்கள் கேபிள் டிவி இணைப்பில் சேவை மீண்டும் இயங்குகிறது.\nஉங்கள் பொறுமைக்கு நன்றி.\n\n- கேஜிஎம் கேபிள்ஸ்`;
+        } else {
+            taTxt = `சேவை தடை\nவணக்கம் ${name},\n${areaName} பகுதியில் உள்ள உங்கள் கேபிள் இணைப்பு சேவை தடையால் பாதிக்கப்பட்டுள்ளது.\nமதிப்பிடப்பட்ட செயலிழப்பு நேரம் ${etaStr}.\nசேவை மீண்டும் இயங்கும்போது தகவல் தரப்படும்.\n\n- கேஜிஎம் கேபிள்ஸ்`;
+        }
+    }
+
+    return (taTxt && enTxt) ? `${taTxt}\n\n${enTxt}` : (taTxt || enTxt);
 }
 
 // ---- Pricing config (from backend; sidebar-only UI) ----
@@ -36,9 +62,9 @@ const pricing = {
 
 function currencyINR(amount) {
   try {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(amount);
+    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 4 }).format(amount);
   } catch {
-    return `₹${(Math.round(amount * 100) / 100).toFixed(2)}`;
+    return `₹${(Math.round(amount * 10000) / 10000).toFixed(4)}`;
   }
 }
 
@@ -153,6 +179,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const areaSel   = document.getElementById("area");
   const areaCount = document.getElementById("areaCount");
   const msgBox    = document.getElementById("message");
+  const templatePreview = document.getElementById("templatePreview");
   const sendBtn   = document.getElementById("sendBtn");
   const statusDiv = document.getElementById("status");
   const dryRunChk = document.getElementById("dryRun");
@@ -160,7 +187,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const langEng   = document.getElementById("langEnglish");
   const etaStart  = document.getElementById("etaStart");
   const etaEnd    = document.getElementById("etaEnd");
-  const msgTypeRadios = document.querySelectorAll("input[name='msgType']");
+  const msgTypeRadios = document.querySelectorAll('input[name="msgType"]');
+  const channelRadios = document.querySelectorAll("input[name='channel']");
+  const msgTypeLabel = document.querySelector("label[for='msg_type']");
 
   // Quick pick handlers
   document.querySelectorAll(".quick-picks .chip").forEach(btn => {
@@ -170,9 +199,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  function currentMsgType() {
-    const r = Array.from(msgTypeRadios).find(x => x.checked);
-    return r ? r.value : "outage";
+  function currentChannel() {
+    const r = Array.from(channelRadios).find(x => x.checked);
+    return r ? r.value : "whatsapp";
+  }
+
+  function getCurrentMsgType() {
+    const checked = Array.from(msgTypeRadios).find(r => r.checked);
+    return checked ? checked.value : "outage";
+  }
+
+  function updateChannelUI() {
+    const isWhatsApp = currentChannel() === 'whatsapp';
+    msgBox.style.display = isWhatsApp ? 'none' : 'block';
+    templatePreview.style.display = isWhatsApp ? 'block' : 'none';
+    if (msgTypeLabel) msgTypeLabel.style.display = isWhatsApp ? 'none' : 'block';
   }
 
   function setStatus(kind, html) {
@@ -181,21 +222,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function updateComposed() {
-    const area = areaSel.value || "your area";
+    const area = areaChoices ? areaChoices.getValue(true) : "";
+    if (!area) return;
+
     const customers = customersByArea[area] || [];
     const firstCustomer = customers.length > 0 ? customers[0] : { name: "Customer", account_id: "SCV-XXXXX" };
+    const msgType = getCurrentMsgType();
 
-    const composed = buildMessage({
-      area,
-      msgType: currentMsgType(),
-      ta: langTamil.checked,
-      en: langEng.checked,
-      etaStart: etaStart.value,
-      etaEnd: etaEnd.value,
-      customerName: firstCustomer.name,
-      accountId: firstCustomer.account_id
-    });
-    msgBox.value = composed;
+    // For SMS (legacy)
+          const composedSms = buildMessage({
+            area,
+            msgType: msgType,
+            ta: langTamil.checked,
+            en: langEng.checked,
+            etaStart: etaStart.value,
+            etaEnd: etaEnd.value,
+            customerName: firstCustomer.name
+          });    msgBox.value = composedSms;
+
+          // For WhatsApp (template preview)
+          const composedWa = buildTemplatePreview({
+              area,
+              msgType: msgType,
+              etaStart: etaStart.value,
+              etaEnd: etaEnd.value,
+              customerName: firstCustomer.name,
+              ta: langTamil.checked,
+              en: langEng.checked
+          });    templatePreview.textContent = composedWa;
   }
 
   // Load pricing/public config
@@ -213,65 +267,98 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Load areas and initialize estimates
   let lastRecipientCount = 0;
   let customersByArea = {};
+  let areaChoices = null; // To hold the Choices.js instance
+
   try {
     const res = await fetch("/api/areas");
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Failed to load areas");
 
-    customersByArea = data.customers || {};
-    areaSel.innerHTML = "";
-    data.areas.forEach(a => {
-      const opt = document.createElement("option");
-      opt.value = a;
-      opt.textContent = a;
-      areaSel.appendChild(opt);
+    if (data.customers) {
+      customersByArea = data.customers;
+    }
+
+    // Clear existing options
+    areaSel.innerHTML = '<option value="">Select an area...</option>';
+    
+    // Create an array of choices for the library
+    const areaOptions = data.areas.map(a => ({
+      value: a,
+      label: a,
+      selected: false,
+      disabled: false,
+    }));
+
+    // Destroy previous instance if it exists
+    if (areaChoices) {
+      areaChoices.destroy();
+    }
+
+    // Initialize Choices.js
+    areaChoices = new Choices(areaSel, {
+      choices: areaOptions,
+      searchEnabled: true,
+      itemSelectText: 'Press to select',
+      removeItemButton: false,
+      placeholder: true,
+      placeholderValue: 'Select an area...'
     });
 
     function updateCount() {
-      const a = areaSel.value;
-      const n = data.counts[a] || 0;
+      const a = areaChoices.getValue(true); // Get value from Choices.js instance
+      const n = a ? (data.counts[a] || 0) : 0;
       lastRecipientCount = n;
-      areaCount.textContent = `${n} recipient${n === 1 ? "" : "s"} in this area`;
+      areaCount.textContent = a ? `${n} recipient${n === 1 ? "" : "s"} in this area` : "";
       updateComposed();
       updateEstimates(lastRecipientCount);
     }
     areaSel.addEventListener("change", updateCount);
     updateCount();
   } catch (e) {
+    console.error("Failed to load area data:", e);
     setStatus("error", `Error loading areas: ${e.message}`);
   }
 
   // Compose interactions
-  [...msgTypeRadios].forEach(r => r.addEventListener("change", updateComposed));
+  msgTypeRadios.forEach(r => r.addEventListener("change", updateComposed));
   langTamil.addEventListener("change", updateComposed);
   langEng.addEventListener("change", updateComposed);
   etaStart.addEventListener("change", updateComposed);
   etaEnd.addEventListener("change", updateComposed);
+  channelRadios.forEach(r => r.addEventListener("change", () => {
+    updateChannelUI();
+    updateComposed();
+  }));
+
+  // Set initial state
+  updateChannelUI();
+  updateComposed();
 
   // Send
   sendBtn.addEventListener("click", async () => {
-    const area = areaSel.value;
-    const message = msgBox.value.trim();
-    const dry_run = !!dryRunChk.checked;
+    const area = areaChoices ? areaChoices.getValue(true) : "";
+    const dry_run = dryRunChk.checked;
+    const message = msgBox.value;
+    const msg_type = getCurrentMsgType();
+    const channel = currentChannel(); // Use currentChannel() to get the selected channel
+    const eta_start = etaStart.value;
+    const eta_end = etaEnd.value;
+    const pricing_category = pricing.defaultCategory;
+    const langs = {
+        en: langEng.checked,
+        ta: langTamil.checked
+    };
 
-    if (!area || !message) {
-      setStatus("error", "Please choose an area and keep a message.");
-      return;
+    if (!area) {
+        // This function doesn't exist, so I'm replacing it with a standard alert.
+        alert('Please select an area first.');
+        return;
     }
 
-    const payload = {
-      area,
-      channel: "whatsapp",
-      message,
-      dry_run,
-      msg_type: currentMsgType(),
-      eta_start: etaStart.value || null,
-      eta_end: etaEnd.value || null
-    };
+    const payload = { area, channel, message, msg_type, dry_run, eta_start, eta_end, pricing_category, langs };
 
     sendBtn.disabled = true;
     setStatus("sending", "Sending…");
-
     try {
       const res = await fetch("/api/send", {
         method: "POST",
@@ -288,7 +375,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         setStatus("info",
           `Dry run ✅<br>Area: <b>${data.area}</b> | Type: <b>${payload.msg_type}</b><br>` +
           (payload.eta_start && payload.eta_end ? `ETA: <b>${fmtTime(payload.eta_start)}–${fmtTime(payload.eta_end)}</b><br>` : "") +
-          `Recipients: <b>${data.count}</b><br>` +
+          `Messages (incl. both languages): <b>${data.count}</b><br>` +
           `Pricing: <b>${(data.pricing_category || pricing.defaultCategory)}</b> @ <b>${currencyINR(unit)}</b> → ` +
           `<b>${currencyINR(previewEst)}</b>`
         );
@@ -309,7 +396,4 @@ document.addEventListener("DOMContentLoaded", async () => {
       sendBtn.disabled = false;
     }
   });
-
-  // Initial compose
-  updateComposed();
 });

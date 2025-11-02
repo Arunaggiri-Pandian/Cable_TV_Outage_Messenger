@@ -12,6 +12,8 @@
   <!-- Flatpickr (time picker) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
   <link href="/static/css/style.css" rel="stylesheet" />
 </head>
 <body>
@@ -60,6 +62,7 @@
       <div class="sb-grow"></div>
       <div class="sb-footer">
         <small class="sb-dev">©️reated by:<br/>Arunaggiri Pandian Karunanidhi</small>
+        <small class="text-muted d-block mt-2">© 2025 KGM Cables. All Rights Reserved.</small>
       </div>
     </div>
   </div>
@@ -68,7 +71,7 @@
     <section class="card">
       <div class="grid">
         <div>
-          <label for="area">Select Area</label>
+          <label for="area"><span class="step-badge">1</span>Select Area</label>
           <select id="area"></select>
           <div id="areaCount" class="muted"></div>
         </div>
@@ -77,36 +80,42 @@
 
     <!-- Options / Composer -->
     <section class="card">
-      <!-- Row 1: Segmented control + Language pills -->
-      <div class="row w-100 justify-content-between" style="gap:0.75rem">
-        <!-- Segmented control (Outage / Restored) -->
-        <div class="seg-wrap">
-          <input type="radio" class="btn-check" name="msgType" id="msgOutage" value="outage" checked>
-          <label class="btn btn-seg" for="msgOutage" data-bs-toggle="tooltip"
-                 data-bs-title="Sends a one-way outage alert to the selected area with optional ETA.">
-            <i class="bi bi-lightning-charge"></i> Outage
-          </label>
+      <!-- Row 1: Message Type and Language -->
+      <div class="row">
+        <div class="col-md-6 mb-3 mb-md-0">
+          <label><span class="step-badge">2</span>Message Type</label>
+          <!-- Segmented control (Outage / Restored) -->
+          <div class="seg-wrap mt-2">
+            <input type="radio" class="btn-check" name="msgType" id="msgOutage" value="outage">
+            <label class="btn btn-seg" for="msgOutage" data-bs-toggle="tooltip"
+                   data-bs-title="Sends a one-way outage alert to the selected area with optional ETA.">
+              <i class="bi bi-lightning-charge"></i> Outage
+            </label>
 
-          <input type="radio" class="btn-check" name="msgType" id="msgRestored" value="restored">
-          <label class="btn btn-seg" for="msgRestored" data-bs-toggle="tooltip"
-                 data-bs-title="Sends a one-way notice that service is restored for the selected area.">
-            <i class="bi bi-check-circle"></i> Restored
-          </label>
+            <input type="radio" class="btn-check" name="msgType" id="msgRestored" value="restored">
+            <label class="btn btn-seg" for="msgRestored" data-bs-toggle="tooltip"
+                   data-bs-title="Sends a one-way notice that service is restored for the selected area.">
+              <i class="bi bi-check-circle"></i> Restored
+            </label>
+          </div>
         </div>
 
-        <!-- Language pill toggles -->
-        <div class="lang-wrap">
-          <input type="checkbox" class="btn-check" id="langTamil" autocomplete="off" checked>
-          <label class="btn btn-pill" for="langTamil" data-bs-toggle="tooltip" data-bs-title="Include Tamil message">தமிழ்</label>
+        <div class="col-md-6">
+          <label><span class="step-badge">3</span>Language</label>
+          <!-- Language pill toggles -->
+          <div class="lang-wrap mt-2">
+            <input type="checkbox" class="btn-check" id="langTamil" autocomplete="off">
+            <label class="btn btn-pill" for="langTamil" data-bs-toggle="tooltip" data-bs-title="Include Tamil message">தமிழ்</label>
 
-          <input type="checkbox" class="btn-check" id="langEnglish" autocomplete="off" checked>
-          <label class="btn btn-pill" for="langEnglish" data-bs-toggle="tooltip" data-bs-title="Include English message">EN</label>
+            <input type="checkbox" class="btn-check" id="langEnglish" autocomplete="off">
+            <label class="btn btn-pill" for="langEnglish" data-bs-toggle="tooltip" data-bs-title="Include English message">EN</label>
+          </div>
         </div>
       </div>
 
       <!-- Row 2: ETA with time pickers + quick picks -->
-      <div class="w-100 mt-3">
-        <label class="muted strong-label">Estimated downtime (optional)</label>
+      <div class="w-100 mt-4">
+        <label class="strong-label">Estimated downtime (optional)</label>
         <div class="d-flex gap-2 flex-wrap align-items-center">
           <div class="input-group time-group">
             <span class="input-group-text"><i class="bi bi-alarm"></i></span>
@@ -144,10 +153,13 @@
     </section>
 
     <section class="card">
-      <label for="message">Composed Message (editable)</label>
-      <textarea id="message" rows="6"></textarea>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message Preview</label>
+                            <textarea class="form-control" id="message" rows="4" placeholder="Enter your message here..." style="display: none;"></textarea>
+                            <div id="templatePreview" class="form-control" style="min-height: 110px; background-color: var(--bs-gray-100); font-family: monospace; white-space: pre-wrap; color: var(--bs-gray-700);"></div>
+                        </div>
       <div class="muted" id="composeHint">
-        Auto-composed from your selections; you can still edit by hand.
+        Select an area, message type, and language to see a preview.
       </div>
     </section>
 
@@ -156,11 +168,16 @@
     </section>
 
     <section id="status" class="status"></section>
+
+    <footer class="text-center text-muted mt-5">
+      <small>© 2025 KGM Cables. All Rights Reserved.</small>
+    </footer>
   </main>
 
   <!-- JS libs -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
   <!-- App script -->
   <script src="/static/js/script.js"></script>

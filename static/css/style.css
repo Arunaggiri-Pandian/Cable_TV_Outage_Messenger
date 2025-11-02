@@ -137,6 +137,22 @@ label { display: block; margin-bottom: 0.4rem; color: var(--label); font-weight:
 .muted { color: var(--muted); font-size: 0.94rem; margin-top: 0.35rem; }
 .strong-label{ color: var(--label); font-weight: 800; }
 
+/* Step Number Badge */
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
 /* Inputs */
 select, textarea, input[type="time"], input.form-control, .timepicker {
   width: 100%; padding: 0.7rem; border-radius: 10px; border: 1px solid var(--line);
