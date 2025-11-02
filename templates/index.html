@@ -87,34 +87,29 @@
           <div class="d-flex align-items-center mt-2">
             <div class="modern-seg-control">
               <input type="radio" class="btn-check" name="msgType" id="msgOutage" value="outage">
-              <label class="modern-seg-btn" for="msgOutage">
+              <label class="modern-seg-btn" for="msgOutage" data-bs-toggle="tooltip" data-bs-title="Sends a one-way outage alert to the selected area with optional ETA.">
                 <i class="bi bi-lightning-charge"></i> Outage
               </label>
               <div class="seg-separator"></div>
               <input type="radio" class="btn-check" name="msgType" id="msgRestored" value="restored">
-              <label class="modern-seg-btn" for="msgRestored">
+              <label class="modern-seg-btn" for="msgRestored" data-bs-toggle="tooltip" data-bs-title="Sends a one-way notice that service is restored for the selected area.">
                 <i class="bi bi-check-circle"></i> Restored
               </label>
             </div>
-            <i class="bi bi-question-circle help-icon ms-2"
-               id="msgTypeHelp"
-               data-bs-toggle="tooltip"
-               data-bs-title="Select this when a new service disruption occurs."></i>
           </div>
         </div>
 
         <div class="col-md-6">
           <label><span class="step-badge">3</span>Language</label>
-          <!-- Language radio buttons -->
-          <div class="seg-wrap mt-2">
+          <div class="modern-seg-control lang-selector mt-2">
             <input type="radio" class="btn-check" name="lang" id="langTamil" value="ta" autocomplete="off">
-            <label class="btn btn-seg" for="langTamil" data-bs-toggle="tooltip" data-bs-title="Send Tamil message">தமிழ்</label>
-
+            <label class="modern-seg-btn" for="langTamil" data-bs-toggle="tooltip" data-bs-title="Send Tamil message">தமிழ்</label>
+            <div class="seg-separator"></div>
             <input type="radio" class="btn-check" name="lang" id="langEnglish" value="en" autocomplete="off">
-            <label class="btn btn-seg" for="langEnglish" data-bs-toggle="tooltip" data-bs-title="Send English message">EN</label>
-            
+            <label class="modern-seg-btn" for="langEnglish" data-bs-toggle="tooltip" data-bs-title="Send English message">English</label>
+            <div class="seg-separator"></div>
             <input type="radio" class="btn-check" name="lang" id="langBoth" value="both" autocomplete="off">
-            <label class="btn btn-seg" for="langBoth" data-bs-toggle="tooltip" data-bs-title="Send both English and Tamil messages">Both</label>
+            <label class="modern-seg-btn" for="langBoth" data-bs-toggle="tooltip" data-bs-title="Send both English and Tamil messages">Both</label>
           </div>
         </div>
       </div>

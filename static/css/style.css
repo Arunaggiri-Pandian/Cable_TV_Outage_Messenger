@@ -187,6 +187,10 @@ input::placeholder { color: var(--placeholder); }
   overflow: hidden;
 }
 
+.modern-seg-control.lang-selector {
+  width: 320px;
+}
+
 .seg-separator {
   width: 1px;
   height: 24px;
@@ -282,3 +286,41 @@ input::placeholder { color: var(--placeholder); }
 .status.info { background: var(--info); }
 .status.error { background: var(--error); }
 code { background: #0f141c; padding: 0.15rem 0.35rem; border-radius: 6px; }
+
+/* Choices.js Theming Overrides */
+.choices__inner {
+  background-color: var(--input-bg);
+  border: 1px solid var(--line);
+  color: var(--input-ink);
+  border-radius: 10px;
+  padding: 0.4rem 0.7rem;
+}
+
+.choices__list--dropdown,
+.choices__list[aria-expanded] {
+  background-color: var(--card);
+  border-color: var(--line);
+}
+
+.choices__list--dropdown .choices__item--selectable.is-highlighted {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+
+.choices__input {
+  color: var(--input-ink);
+}
+
+.choices__placeholder {
+
+  color: var(--placeholder);
+
+}
+
+
+
+.choices__list--dropdown .choices__item {
+
+  color: var(--ink);
+
+}
