@@ -168,9 +168,6 @@ input::placeholder { color: var(--placeholder); }
   color: var(--muted);
 }
 
-.row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-
-
 /* Help icon (tooltip trigger) */
 .help-icon{
   color:#f0f7ff !important; opacity: 1 !important; cursor: help;
@@ -265,8 +262,25 @@ input::placeholder { color: var(--placeholder); }
 }
 
 /* Time input groups */
-.time-group .input-group-text{
-  background: var(--input-bg); border:1px solid var(--line); color: var(--muted);
+.time-group {
+  width: 200px;
+}
+
+.time-group .input-group-text {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+}
+
+.time-group .form-control.timepicker,
+.time-group .flatpickr-input {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white !important; /* Force color override for Flatpickr */
+  border-left: none;
+  border-radius: 0 10px 10px 0;
 }
 
 /* Actions */
