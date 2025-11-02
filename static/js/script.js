@@ -359,6 +359,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       const n = a ? (data.counts[a] || 0) : 0;
       lastRecipientCount = n;
       areaCount.textContent = a ? `${n} recipient${n === 1 ? "" : "s"} in this area` : "";
+      
+      // Add/remove class for styling the selected state
+      const container = areaChoices.containerOuter.element;
+      if (a) {
+        container.classList.add('is-selected');
+      } else {
+        container.classList.remove('is-selected');
+      }
+
       updateComposed();
       updateEstimates(lastRecipientCount);
     }

@@ -19,6 +19,8 @@
   --header-ink: #f8fafc;
   --logo-bg: #0f172a;
 
+  --dropdown-bg: #2c3a4f; /* A lighter dark shade for dropdowns */
+
   --seg-bg: #2a3a50;
   --seg-ink: #e8f0ff;
   --seg-on-bg: #113265;
@@ -66,6 +68,8 @@ body.light-mode {
   --header-bg-end: #ffffff;
   --header-ink: #0f172a;
   --logo-bg: #f8fafc;
+
+  --dropdown-bg: #ffffff;
 
   --seg-bg: #d1d5db;
   --seg-ink: #1f2937;
@@ -289,16 +293,17 @@ code { background: #0f141c; padding: 0.15rem 0.35rem; border-radius: 6px; }
 
 /* Choices.js Theming Overrides */
 .choices__inner {
-  background-color: var(--input-bg);
+  background-color: var(--bg);
   border: 1px solid var(--line);
   color: var(--input-ink);
   border-radius: 10px;
   padding: 0.4rem 0.7rem;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
-  background-color: var(--card);
+  background-color: var(--dropdown-bg);
   border-color: var(--line);
 }
 
@@ -319,14 +324,27 @@ code { background: #0f141c; padding: 0.15rem 0.35rem; border-radius: 6px; }
 
 
 
-.choices__list--dropdown .choices__item {
-
-
-
+.choices__list--single .choices__item {
   color: var(--ink);
+}
 
+/* Styling for when an item is selected */
+.choices.is-selected .choices__inner {
+  background-color: var(--primary);
+  color: white;
+}
 
+.choices.is-selected .choices__list--single .choices__item {
+  color: white;
+}
 
+.choices.is-selected[data-type*=select-one]::after {
+  border-top-color: white;
+}
+
+/* Make dropdown text pure white in dark mode for max contrast */
+body:not(.light-mode) .choices__list--dropdown .choices__item {
+  color: white;
 }
 
 
