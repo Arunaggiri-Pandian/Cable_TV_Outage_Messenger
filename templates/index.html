@@ -102,13 +102,16 @@
 
         <div class="col-md-6">
           <label><span class="step-badge">3</span>Language</label>
-          <!-- Language pill toggles -->
-          <div class="lang-wrap mt-2">
-            <input type="checkbox" class="btn-check" id="langTamil" autocomplete="off">
-            <label class="btn btn-pill" for="langTamil" data-bs-toggle="tooltip" data-bs-title="Include Tamil message">தமிழ்</label>
+          <!-- Language radio buttons -->
+          <div class="seg-wrap mt-2">
+            <input type="radio" class="btn-check" name="lang" id="langTamil" value="ta" autocomplete="off">
+            <label class="btn btn-seg" for="langTamil" data-bs-toggle="tooltip" data-bs-title="Send Tamil message">தமிழ்</label>
 
-            <input type="checkbox" class="btn-check" id="langEnglish" autocomplete="off">
-            <label class="btn btn-pill" for="langEnglish" data-bs-toggle="tooltip" data-bs-title="Include English message">EN</label>
+            <input type="radio" class="btn-check" name="lang" id="langEnglish" value="en" autocomplete="off">
+            <label class="btn btn-seg" for="langEnglish" data-bs-toggle="tooltip" data-bs-title="Send English message">EN</label>
+            
+            <input type="radio" class="btn-check" name="lang" id="langBoth" value="both" autocomplete="off">
+            <label class="btn btn-seg" for="langBoth" data-bs-toggle="tooltip" data-bs-title="Send both English and Tamil messages">Both</label>
           </div>
         </div>
       </div>

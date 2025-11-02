@@ -221,36 +221,71 @@ document.addEventListener("DOMContentLoaded", async () => {
     statusDiv.innerHTML = html;
   }
 
-  function updateComposed() {
-    const area = areaChoices ? areaChoices.getValue(true) : "";
-    if (!area) return;
+    function updateComposed() {
 
-    const customers = customersByArea[area] || [];
-    const firstCustomer = customers.length > 0 ? customers[0] : { name: "Customer", account_id: "SCV-XXXXX" };
-    const msgType = getCurrentMsgType();
+      const area = areaChoices ? areaChoices.getValue(true) : "";
 
-    // For SMS (legacy)
-          const composedSms = buildMessage({
-            area,
-            msgType: msgType,
-            ta: langTamil.checked,
-            en: langEng.checked,
-            etaStart: etaStart.value,
-            etaEnd: etaEnd.value,
-            customerName: firstCustomer.name
-          });    msgBox.value = composedSms;
+      if (!area) return;
 
-          // For WhatsApp (template preview)
-          const composedWa = buildTemplatePreview({
-              area,
-              msgType: msgType,
-              etaStart: etaStart.value,
-              etaEnd: etaEnd.value,
-              customerName: firstCustomer.name,
-              ta: langTamil.checked,
-              en: langEng.checked
-          });    templatePreview.textContent = composedWa;
-  }
+  
+
+      const customers = customersByArea[area] || [];
+
+      const firstCustomer = customers.length > 0 ? customers[0] : { name: "Customer" };
+
+      const msgType = getCurrentMsgType();
+
+      const selectedLang = document.querySelector('input[name="lang"]:checked')?.value;
+
+  
+
+      // For SMS (legacy)
+
+      const composedSms = buildMessage({
+
+        area,
+
+        msgType: msgType,
+
+        ta: selectedLang === 'ta' || selectedLang === 'both',
+
+        en: selectedLang === 'en' || selectedLang === 'both',
+
+        etaStart: etaStart.value,
+
+        etaEnd: etaEnd.value,
+
+        customerName: firstCustomer.name
+
+      });
+
+      msgBox.value = composedSms;
+
+  
+
+      // For WhatsApp (template preview)
+
+      const composedWa = buildTemplatePreview({
+
+          area,
+
+          msgType: msgType,
+
+          etaStart: etaStart.value,
+
+          etaEnd: etaEnd.value,
+
+          customerName: firstCustomer.name,
+
+          ta: selectedLang === 'ta' || selectedLang === 'both',
+
+          en: selectedLang === 'en' || selectedLang === 'both'
+
+      });
+
+      templatePreview.textContent = composedWa;
+
+    }
 
   // Load pricing/public config
   try {
@@ -340,13 +375,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dry_run = dryRunChk.checked;
     const message = msgBox.value;
     const msg_type = getCurrentMsgType();
-    const channel = currentChannel(); // Use currentChannel() to get the selected channel
+    const channel = currentChannel();
     const eta_start = etaStart.value;
     const eta_end = etaEnd.value;
     const pricing_category = pricing.defaultCategory;
+    
+    const selectedLang = document.querySelector('input[name="lang"]:checked')?.value;
     const langs = {
-        en: langEng.checked,
-        ta: langTamil.checked
+        en: selectedLang === 'en' || selectedLang === 'both',
+        ta: selectedLang === 'ta' || selectedLang === 'both'
     };
 
     if (!area) {
