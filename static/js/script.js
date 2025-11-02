@@ -187,6 +187,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const langEng   = document.getElementById("langEnglish");
   const etaStart  = document.getElementById("etaStart");
   const etaEnd    = document.getElementById("etaEnd");
+  const etaSection = document.getElementById("etaSection");
   const msgTypeRadios = document.querySelectorAll('input[name="msgType"]');
   const channelRadios = document.querySelectorAll("input[name='channel']");
   const msgTypeLabel = document.querySelector("label[for='msg_type']");
@@ -199,6 +200,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
+  function handleMsgTypeChange() {
+    const msgType = getCurrentMsgType();
+    if (etaSection) {
+      if (msgType === 'outage') {
+        etaSection.style.display = 'block';
+      } else {
+        etaSection.style.display = 'none';
+        setTimeInputs("", ""); // Clear ETA when not an outage
+      }
+    }
+    updateComposed();
+  }
+
   function currentChannel() {
     const r = Array.from(channelRadios).find(x => x.checked);
     return r ? r.value : "whatsapp";
@@ -206,7 +220,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function getCurrentMsgType() {
     const checked = Array.from(msgTypeRadios).find(r => r.checked);
-    return checked ? checked.value : "outage";
+    return checked ? checked.value : null;
   }
 
   function updateChannelUI() {
@@ -356,7 +370,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Compose interactions
-  msgTypeRadios.forEach(r => r.addEventListener("change", updateComposed));
+  msgTypeRadios.forEach(r => r.addEventListener("change", handleMsgTypeChange));
   langTamil.addEventListener("change", updateComposed);
   langEng.addEventListener("change", updateComposed);
   etaStart.addEventListener("change", updateComposed);
@@ -369,6 +383,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Set initial state
   updateChannelUI();
   updateComposed();
+  handleMsgTypeChange();
 
   // Send
   sendBtn.addEventListener("click", async () => {
