@@ -30,7 +30,10 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 # ---- Config ----
-CSV_PATH = os.getenv("CSV_PATH", "data/customers.csv")
+# Construct an absolute path to the CSV file to ensure it's found in any environment.
+# The path is relative to the project's root directory.
+APP_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+CSV_PATH = os.path.join(APP_ROOT, os.getenv("CSV_PATH", "data/customers.csv"))
 MSID = os.getenv("TWILIO_MESSAGING_SERVICE_SID")
 FROM_SMS = os.getenv("TWILIO_FROM_SMS")
 FROM_WA  = os.getenv("TWILIO_FROM_WHATSAPP")
