@@ -41,6 +41,18 @@
       border-radius: 10px;
       font-weight: 700;
     }
+    .login-footer {
+      position: fixed;
+      bottom: 1rem;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: var(--muted);
+    }
+    .form-control-lg::placeholder {
+      font-size: 0.9rem;
+      color: #999;
+    }
   </style>
 </head>
 <body class="login-page">
@@ -76,6 +88,10 @@
       <button type="submit" class="btn btn-primary btn-lg w-100">Login</button>
     </form>
   </div>
+
+  <footer class="login-footer">
+    <small>© 2025 KGM Cables & Arunaggiri Pandian Karunanidhi. All Rights Reserved.</small>
+  </footer>
 
   <script>
     // --- Theme Toggle Logic ---
