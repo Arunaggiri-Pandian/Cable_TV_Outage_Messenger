@@ -161,9 +161,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   let isLight = localStorage.getItem("theme") === "light";
 
   function setTheme(light) {
+    const themeIcon = document.getElementById("themeIcon");
+    const themeText = document.getElementById("themeText");
+
     document.body.classList.toggle("light-mode", light);
-    if (themeToggle) {
-      themeToggle.innerHTML = light ? '<i class="bi bi-brightness-high-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
+    if (themeIcon) {
+      themeIcon.className = light ? 'bi bi-brightness-high-fill' : 'bi bi-moon-stars-fill';
+    }
+    if (themeText) {
+      themeText.textContent = light ? 'Light' : 'Dark';
     }
     localStorage.setItem("theme", light ? "light" : "dark");
     isLight = light;
