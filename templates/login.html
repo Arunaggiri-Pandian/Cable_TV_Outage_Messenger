@@ -46,9 +46,9 @@
 <body class="login-page">
   <div class="card login-card">
     <div class="login-header">
-      <img src="/static/img/logo.png" alt="KGM Cables" style="height: 50px; margin-bottom: 1rem;">
-      <h2>Private Access</h2>
-      <p>Please enter the password to continue.</p>
+      <img src="/static/img/logo.png" alt="KGM Cables" style="height: 50px; margin-bottom: 0.5rem;">
+      <h3 style="color: var(--ink); font-weight: 700;">KGM Cables</h3>
+      <p class="mt-3">Please enter the password to continue.</p>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -60,10 +60,13 @@
     {% endwith %}
 
     <form method="POST" action="{{ url_for('main.login') }}">
-      <div class="mb-3">
-        <input type="password" name="password" class="form-control form-control-lg" placeholder="Password" required>
+      <div class="mb-3 position-relative">
+        <input id="passwordInput" type="password" name="password" class="form-control form-control-lg" placeholder="Enter password provided by Arun" required style="padding-right: 3rem;">
+        <button type="button" id="togglePassword" class="btn btn-link position-absolute" style="top: 50%; right: 0.5rem; transform: translateY(-50%); color: var(--muted);">
+            <i id="toggleIcon" class="bi bi-eye-slash-fill"></i>
+        </button>
       </div>
-      <button type="submit" class="btn btn-primary btn-lg w-100">Unlock</button>
+      <button type="submit" class="btn btn-primary btn-lg w-100">Login</button>
     </form>
   </div>
 
@@ -72,6 +75,27 @@
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "light") {
       document.body.classList.add("light-mode");
+    }
+
+    // Password visibility toggle
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('passwordInput');
+    const toggleIcon = document.getElementById('toggleIcon');
+
+    if (togglePassword && passwordInput && toggleIcon) {
+      togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+
+        // Change the icon
+        if (type === 'password') {
+          toggleIcon.classList.remove('bi-eye-fill');
+          toggleIcon.classList.add('bi-eye-slash-fill');
+        } else {
+          toggleIcon.classList.remove('bi-eye-slash-fill');
+          toggleIcon.classList.add('bi-eye-fill');
+        }
+      });
     }
   </script>
 </body>
