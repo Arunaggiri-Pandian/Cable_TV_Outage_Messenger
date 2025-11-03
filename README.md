@@ -12,12 +12,25 @@ The KGM Cables Notification System is a simple, local web application designed f
 
 ## Technology Stack
 
-*   **Backend:** Python 3.9+ with Flask
-*   **Frontend:** HTML5, CSS3, and "vanilla" JavaScript (ES6+)
-*   **WSGI Server:** Gunicorn
-*   **Static Files:** WhiteNoise
-*   **Messaging API:** MSG91 (for WhatsApp) and Twilio
-*   **Package Management:** uv
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+*   The core backend language for the application.
+
+![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)
+*   A lightweight micro web framework used to build the application's routes and logic.
+
+![Gunicorn](https://img.shields.io/badge/gunicorn-%23499848.svg?style=for-the-badge&logo=gunicorn&logoColor=white)
+*   The production-grade WSGI server used to run the application reliably.
+
+![WhiteNoise](https://img.shields.io/badge/whitenoise-FFFFFF?style=for-the-badge&logo=python&logoColor=black)
+*   Handles the serving of static files (`.css`, `.js`) efficiently in a production environment.
+
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+*   Standard frontend technologies for the user interface.
+
+![MSG91](https://img.shields.io/badge/MSG91-Integration-blue?style=for-the-badge)
+*   The primary messaging API used for sending templated WhatsApp messages.
 
 ## Setup and Installation
 
