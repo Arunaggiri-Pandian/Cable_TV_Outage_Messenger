@@ -7,11 +7,12 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
-    # Generate a new secret key on each startup to invalidate old sessions
-    app.secret_key = os.urandom(16)
+    # Use a stable secret key from the environment for session persistence
+    app.secret_key = os.environ.get('SECRET_KEY')
     
     # Set session lifetime for testing
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=10)
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=5)
+    print(f" * Session lifetime set to: {app.config['PERMANENT_SESSION_LIFETIME']}")
 
     from . import routes
     app.register_blueprint(routes.bp)
