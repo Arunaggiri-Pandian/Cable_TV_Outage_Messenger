@@ -18,7 +18,6 @@ logs/
 *.txt
 
 # data
-data/customers.csv
 
 # diagrams
 *.drawio
