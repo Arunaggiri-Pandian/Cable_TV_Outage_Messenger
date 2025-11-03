@@ -181,8 +181,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const msgBox    = document.getElementById("message");
   const templatePreview = document.getElementById("templatePreview");
   const sendBtn   = document.getElementById("sendBtn");
+  const dryRunBtn = document.getElementById("dryRunBtn");
   const statusDiv = document.getElementById("status");
-  const dryRunChk = document.getElementById("dryRun");
   const langTamil = document.getElementById("langTamil");
   const langEng   = document.getElementById("langEnglish");
   const etaStart  = document.getElementById("etaStart");
@@ -378,15 +378,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     setStatus("error", `Error loading areas: ${e.message}`);
   }
 
+  // --- State & Disabling Logic ---
+  function disableSendBtn() {
+    if (sendBtn && !sendBtn.disabled) {
+      sendBtn.disabled = true;
+    }
+  }
+
   // Compose interactions
-  msgTypeRadios.forEach(r => r.addEventListener("change", handleMsgTypeChange));
-  langTamil.addEventListener("change", updateComposed);
-  langEng.addEventListener("change", updateComposed);
-  etaStart.addEventListener("change", updateComposed);
-  etaEnd.addEventListener("change", updateComposed);
+  msgTypeRadios.forEach(r => r.addEventListener("change", () => {
+    handleMsgTypeChange();
+    disableSendBtn();
+  }));
+  areaSel.addEventListener("change", () => {
+    updateCount();
+    disableSendBtn();
+  });
+  langTamil.addEventListener("change", () => { updateComposed(); disableSendBtn(); });
+  langEng.addEventListener("change", () => { updateComposed(); disableSendBtn(); });
+  etaStart.addEventListener("change", () => { updateComposed(); disableSendBtn(); });
+  etaEnd.addEventListener("change", () => { updateComposed(); disableSendBtn(); });
   channelRadios.forEach(r => r.addEventListener("change", () => {
     updateChannelUI();
     updateComposed();
+    disableSendBtn();
   }));
 
   // Set initial state
@@ -394,8 +409,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   updateComposed();
   handleMsgTypeChange();
 
-  // Send
-  sendBtn.addEventListener("click", async () => {
+  // --- Send Logic ---
+  async function sendRequest(isDryRun) {
     const area = areaChoices ? areaChoices.getValue(true) : "";
     const msg_type = getCurrentMsgType();
     const selectedLang = document.querySelector('input[name="lang"]:checked');
@@ -414,7 +429,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    const dry_run = dryRunChk.checked;
     const message = msgBox.value;
     const channel = currentChannel();
     const eta_start = etaStart.value;
@@ -426,9 +440,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         ta: selectedLang.value === 'ta' || selectedLang.value === 'both'
     };
 
-    const payload = { area, channel, message, msg_type, dry_run, eta_start, eta_end, pricing_category, langs };
+    const payload = { area, channel, message, msg_type, dry_run: isDryRun, eta_start, eta_end, pricing_category, langs };
 
-    sendBtn.disabled = true;
+    sendBtn.disabled = true; // Always disable during a request
+    dryRunBtn.disabled = true;
     setStatus("sending", "Sending…");
     try {
       const res = await fetch("/api/send", {
@@ -451,6 +466,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           `<b>${currencyINR(previewEst)}</b>`
         );
         updateEstimates(data.count, previewEst);
+        sendBtn.disabled = false; // Enable live send button after successful dry run
       } else {
         const runCost = (typeof data.estimated_cost_inr === "number") ? data.estimated_cost_inr : unit * (data.sent || 0);
 
@@ -464,7 +480,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (e) {
       setStatus("error", `Error: ${e.message}`);
     } finally {
-      sendBtn.disabled = false;
+      dryRunBtn.disabled = false; // Always re-enable dry run button
     }
-  });
+  }
+
+  dryRunBtn.addEventListener("click", () => sendRequest(true));
+  sendBtn.addEventListener("click", () => sendRequest(false));
 });

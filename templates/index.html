@@ -113,7 +113,7 @@
 
       <!-- Row 2: ETA with time pickers + quick picks -->
       <div class="w-100 mt-4" id="etaSection" style="display: none;">
-        <label class="strong-label">Estimated downtime (optional)</label>
+        <label class="strong-label">Estimated downtime</label>
         <div class="d-flex gap-2">
           <div class="input-group time-group">
             <span class="input-group-text"><i class="bi bi-alarm"></i></span>
@@ -136,17 +136,6 @@
           <button type="button" class="chip danger" data-pick="clear">Clear</button>
         </div>
       </div>
-
-      <!-- Row 3: Dry run switch -->
-      <div class="d-flex justify-content-end mt-3">
-        <div class="form-check form-switch form-switch-lg">
-          <input class="form-check-input" type="checkbox" id="dryRun" checked>
-          <label class="form-check-label" for="dryRun">Dry run (preview only)</label>
-          <i class="bi bi-question-circle help-icon ms-2"
-             data-bs-toggle="tooltip"
-             data-bs-title="Preview the message and cost without sending. Disable to send."></i>
-        </div>
-      </div>
     </section>
 
     <section class="card">
@@ -161,7 +150,8 @@
     </section>
 
     <section class="actions">
-      <button id="sendBtn">Send via WhatsApp</button>
+      <button id="dryRunBtn" class="btn-primary">Demo Run</button>
+      <button id="sendBtn" class="btn-danger" disabled>Send LIVE Message</button>
     </section>
 
     <section id="status" class="status"></section>

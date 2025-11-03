@@ -298,12 +298,34 @@ input::placeholder { color: var(--placeholder); }
   gap:.75rem; margin: 1rem 0;
 }
 
-#sendBtn {
-  padding: 0.7rem 1.2rem; border-radius: 10px; border: 1px solid var(--line); cursor: pointer;
-  background: var(--primary); color: white; font-weight: 800;
+.btn-primary, .btn-danger {
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  font-weight: 800;
+  transition: opacity 0.2s;
 }
-#sendBtn:hover { opacity: 0.95; }
-#sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-danger {
+  background: #d9534f; /* A safe, standard red */
+  color: white;
+  border-color: #d43f3a;
+}
+
+.btn-primary:hover, .btn-danger:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:disabled, .btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* Status block */
 .status { padding: 0.9rem; border-radius: 10px; min-height: 2.2rem; }
