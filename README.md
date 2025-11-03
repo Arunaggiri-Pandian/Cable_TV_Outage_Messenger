@@ -2,64 +2,32 @@
 
 The KGM Cables Notification System is a simple, local web application designed for the owner of the KGM Cables television network. It provides a user-friendly interface to send bulk notifications to customers during a service outage.
 
-## Project Structure
-
-```
-KGM_Cables/
-├── app/                    # Main application folder
-│   ├── __init__.py         # Initializes the app, creates the Flask app instance
-│   └── routes.py           # Defines all backend API endpoints and business logic
-├── data/
-│   └── customers.csv       # Customer data file (name, phone, area)
-├── static/
-│   ├── css/
-│   │   └── style.css       # Stylesheet for the web interface
-│   └── js/
-│       └── script.js       # Frontend logic for interactivity and API calls
-├── templates/
-│   └── index.html          # Main HTML page for the user interface
-├── .env.example            # Example environment variables file
-├── .gitignore              # Specifies files and directories for Git to ignore
-├── pyproject.toml          # Project metadata and dependencies for uv
-├── README.md               # This file
-└── run.py                  # Main entry point to start the Flask application
-```
-
-## Flowchart
-
-<div align="center">
-
-![Flowchart](assets/cable_tv_flowchart.png)
-
-*This flowchart illustrates the application's workflow, from user interaction to message delivery.* 
-
-</div>
-
 ## Features
 
 *   **Area-Based Targeting:** Allows the user to select a specific geographical area to send notifications to.
 *   **Multi-Channel Messaging:** Enables the user to choose between sending notifications via SMS or WhatsApp.
-*   **Customizable Messages:** Provides a text box with a default message template that the user can edit before sending.
-*   **One-Click Sending:** A single "Send" button triggers the process of sending the message to all customers in the selected area.
-*   **Status Feedback:** The UI provides clear feedback to the user (e.g., "Sending...", "Messages sent successfully," or "Error").
+*   **Templated Messages:** Uses pre-approved message templates for reliability with providers like MSG91.
+*   **Secure Access:** The application is protected by a password with a timed session for security.
+*   **Light & Dark Mode:** Includes a theme toggle for user comfort.
 
 ## Technology Stack
 
 *   **Backend:** Python 3.9+ with Flask
 *   **Frontend:** HTML5, CSS3, and "vanilla" JavaScript (ES6+)
-*   **Data Processing:** Pandas
-*   **Messaging API:** Twilio and WhatsApp Cloud API
+*   **WSGI Server:** Gunicorn
+*   **Static Files:** WhiteNoise
+*   **Messaging API:** MSG91 (for WhatsApp) and Twilio
 *   **Package Management:** uv
 
 ## Setup and Installation
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/KGM_Cables.git
-    cd KGM_Cables
+    git clone https://github.com/Arunaggiri-Pandian/Cable_TV_Outage_Messenger.git
+    cd Cable_TV_Outage_Messenger
     ```
 
-2.  **Create a virtual environment:**
+2.  **Create and activate a virtual environment:**
     ```bash
     python -m venv .venv
     source .venv/bin/activate
@@ -72,42 +40,47 @@ KGM_Cables/
     ```
 
 4.  **Create a `.env` file:**
-    Create a `.env` file in the project root and add the following environment variables:
+    Copy the contents of `.env.example` into a new file named `.env` and fill in your credentials.
 
-    ```
-    # --- App ---
+## Security
 
-    CSV_PATH=data/customers.csv
-    PORT=8501
+The application is protected by a password to prevent unauthorized access. This feature is controlled by environment variables in your `.env` file.
 
-    # --- WhatsApp Cloud API (Meta) ---
+*   `PASSWORD_PROTECT=true`: Set to `true` to enable the login screen. If set to `false`, the application will be publicly accessible.
+*   `APP_PASSWORD=your_secret_password`: The password required to log in.
+*   `SECRET_KEY=a_long_random_string`: A long, random string used to sign the user's session cookie. This should be kept secret.
 
-    WHATSAPP_CLOUD_TOKEN=YOUR_WHATSAPP_CLOUD_TOKEN
-    WHATSAPP_CLOUD_PHONE_ID=YOUR_WHATSAPP_CLOUD_PHONE_ID
-    WHATSAPP_CLOUD_API_VERSION=v20.0
+## Running the Application
 
-    # --- Twilio --- (Optional)
+There are two ways to run the application, depending on your needs.
 
-    TWILIO_ACCOUNT_SID=YOUR_TWILIO_ACCOUNT_SID
-    TWILIO_AUTH_TOKEN=YOUR_TWILIO_AUTH_TOKEN
-    TWILIO_MESSAGING_SERVICE_SID=YOUR_TWILIO_MESSAGING_SERVICE_SID
-    TWILIO_FROM_SMS=YOUR_TWILIO_FROM_SMS
-    TWILIO_FROM_WHATSAPP=YOUR_TWILIO_FROM_WHATSAPP
-    ```
+### For Development
 
-5.  **Run the application:**
-    ```bash
-    python run.py
-    ```
-    The application will be available at `http://127.0.0.1:8501`.
+This method uses the Flask development server, which provides an interactive debugger and automatically reloads when you change the code. It is perfect for local development and testing.
 
-## Usage
+```bash
+python run.py
+```
+The application will be available at `http://127.0.0.1:8501`.
 
-1.  Open your web browser and navigate to `http://127.0.0.1:8501`.
-2.  Select an area from the dropdown menu.
-3.  Choose a channel (SMS or WhatsApp).
-4.  Edit the message in the text box.
-5.  Click the "Send" button.
+### For Production (Local Simulation)
+
+This method uses **Gunicorn**, the same production-grade server that will be used for deployment. It is the best way to test the application in a production-like environment.
+
+```bash
+gunicorn --bind 0.0.0.0:8501 --reload "app:create_app()"
+```
+The `--reload` flag tells Gunicorn to watch for file changes, similar to the development server.
+
+## Deployment
+
+The application is configured for easy deployment on cloud platforms like **Render**.
+
+*   **`Procfile`**: This file tells the hosting service how to run the app using the command `gunicorn "app:create_app()"`.
+*   **Gunicorn**: A robust WSGI server that runs the Python application efficiently and reliably.
+*   **WhiteNoise**: A library that enables the application to serve its own static files (`.css`, `.js`) in a production environment, a task Gunicorn does not handle on its own.
+
+---
 
 <div align="center">
   
