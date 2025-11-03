@@ -89,6 +89,23 @@ gunicorn --bind 0.0.0.0:8501 --reload "app:create_app()"
 ```
 The `--reload` flag tells Gunicorn to watch for file changes, similar to the development server.
 
+## Configuration
+
+### Session Timeout
+
+The application has a session timeout feature that automatically reloads the page after a period of inactivity. You can customize this timeout by editing a single file.
+
+*   **File to Edit**: `static/js/script.js`
+*   **Variable to Change**: `countdown`
+
+To change the timeout, open the `static/js/script.js` file and find the following line of code:
+
+```javascript
+let countdown = 1800; // 30 minutes
+```
+
+You can change the value of `countdown` to any number of seconds you prefer. For example, to set the timeout to 1 hour, you would change it to `3600`.
+
 ## Deployment
 
 The application is configured for easy deployment on cloud platforms like **Render**.
