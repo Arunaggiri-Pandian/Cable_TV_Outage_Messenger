@@ -1,10 +1,11 @@
 from dotenv import load_dotenv
+# Main entry point for the KGM Cables Flask application.
 from app import create_app
-import os
+
+# Note: The app is created and run in this file.
+# Any changes here will trigger the Flask auto-reloader.
 
 if __name__ == "__main__":
-    load_dotenv()  # load .env at startup
     app = create_app()
-    port = int(os.getenv("PORT", "5001"))
-    # app.run(host="127.0.0.1", port=port, debug=True)
-    app.run(host='0.0.0.0', port=8501, debug=True)
+    app.run(host="0.0.0.0", port=8501, debug=True)
+

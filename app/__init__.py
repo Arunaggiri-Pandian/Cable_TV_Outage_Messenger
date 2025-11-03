@@ -1,21 +1,19 @@
 import os
 from flask import Flask
-from pathlib import Path
+from dotenv import load_dotenv
+from datetime import timedelta
 
-def create_app() -> Flask:
-    root = Path(__file__).resolve().parents[1]
-    app = Flask(
-        __name__,
-        static_folder=str(root / "static"),
-        template_folder=str(root / "templates"),
-    )
+load_dotenv()
 
-    # Ensure logs dir exists
-    (root / "logs").mkdir(exist_ok=True)
+def create_app():
+    app = Flask(__name__, template_folder='../templates', static_folder='../static')
+    # Generate a new secret key on each startup to invalidate old sessions
+    app.secret_key = os.urandom(16)
+    
+    # Set session lifetime for testing
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=10)
 
-    # Register routes
-    with app.app_context():
-        from .routes import bp
-        app.register_blueprint(bp)
+    from . import routes
+    app.register_blueprint(routes.bp)
 
     return app

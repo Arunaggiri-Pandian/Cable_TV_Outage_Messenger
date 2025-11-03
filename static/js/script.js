@@ -478,7 +478,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateEstimates((data.sent || 0), runCost);
       }
     } catch (e) {
-      setStatus("error", `Error: ${e.message}`);
+      // If the session expired, notify the user and start a countdown to reload.
+      setStatus("warn", "Your session has expired. Redirecting to login...");
+      sendBtn.disabled = true;
+      dryRunBtn.disabled = true;
+      
+      let countdown = 5;
+      const updateMessage = () => {
+        const secondsText = countdown === 1 ? "second" : "seconds";
+        setStatus("warn", `Your session has expired. Redirecting in ${countdown} ${secondsText}...`);
+      };
+
+      updateMessage(); // Initial message
+      const interval = setInterval(() => {
+        countdown--;
+        if (countdown > 0) {
+          updateMessage();
+        } else {
+          clearInterval(interval);
+          window.location.reload();
+        }
+      }, 1000);
+      return; // Stop further execution in the 'finally' block
     } finally {
       dryRunBtn.disabled = false; // Always re-enable dry run button
     }

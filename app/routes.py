@@ -5,10 +5,11 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, Any, List, Tuple
 import json
+from functools import wraps
 
 import httpx
 import pandas as pd
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, render_template, request, session, redirect, url_for, flash, current_app
 from twilio.rest import Client
 from datetime import datetime
 from pathlib import Path
@@ -59,6 +60,9 @@ TPL_RESTORED_TA = os.getenv("WA_TPL_RESTORED_TA", "").strip()
 LANG_EN = os.getenv("WA_LANG_EN", "en_US").strip()
 LANG_TA = os.getenv("WA_LANG_TA", "ta_IN").strip()
 
+# Password Protection
+PASSWORD_PROTECT = os.getenv("PASSWORD_PROTECT", "false").lower() == "true"
+APP_PASSWORD = os.getenv("APP_PASSWORD")
 
 
 # Pricing (server-side copy so audit logs record it)
@@ -133,6 +137,15 @@ def append_audit(area: str, channel: str, count: int, sent: int, failed: int, fp
             msg_type or "", eta or "",
             (pricing_category or ""), (unit_price_inr or 0), (estimated_cost_inr or 0), CURRENCY
         ])
+
+# -------- Login Gatekeeper --------
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if PASSWORD_PROTECT and not session.get('logged_in'):
+            return redirect(url_for('main.login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # -------- WhatsApp Cloud senders --------
 
@@ -269,8 +282,29 @@ def send_one_twilio(client: Client, to: str, channel: str, message: str) -> Tupl
 
 # -------- Routes --------
 @bp.route("/", methods=["GET"])
+@login_required
 def index():
     return render_template("index.html")
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if not PASSWORD_PROTECT or session.get('logged_in'):
+        return redirect(url_for('main.index'))
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        if APP_PASSWORD and password == APP_PASSWORD:
+            session['logged_in'] = True
+            session.permanent = True  # Use the configured timed session
+            return redirect(url_for('main.index'))
+        else:
+            flash('Incorrect password. Please try again.', 'danger')
+    return render_template('login.html')
+
+@bp.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('main.login'))
 
 @bp.route("/api/public_config", methods=["GET"])
 def api_public_config():
@@ -285,6 +319,7 @@ def api_public_config():
     })
 
 @bp.route("/api/areas", methods=["GET"])
+@login_required
 def api_areas():
     try:
         df = load_customers()
@@ -301,6 +336,7 @@ def api_areas():
         return jsonify({"error": str(e)}), 500
 
 @bp.route("/api/send", methods=["POST"])
+@login_required
 def api_send():
     data = request.get_json(silent=True) or {}
     area = (data.get("area") or "").strip()
