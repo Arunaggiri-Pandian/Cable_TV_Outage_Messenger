@@ -23,10 +23,11 @@ bp = Blueprint("main", __name__)
 logger = logging.getLogger("kgm")
 logger.setLevel(logging.INFO)
 if not logger.handlers:
-    fh = logging.FileHandler("logs/app.log")
-    fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
-    fh.setFormatter(fmt)
-    logger.addHandler(fh)
+    # In production, log to standard error (the console)
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
 # ---- Config ----
 CSV_PATH = os.getenv("CSV_PATH", "data/customers.csv")
@@ -197,17 +198,15 @@ def send_bulk_whatsapp_msg91(recipients: List[Dict[str, Any]], template_key: str
 
     template_def = TEMPLATE_MAP.get(template_key)
     if not template_def:
+        logger.error(f"Invalid MSG91 template key received: {template_key}")
         raise ValueError(f"Invalid template key: {template_key}")
 
     to_numbers = [r["to"] for r in recipients]
     
     # For simplicity, this example sends the same dynamic data to all recipients in the bulk message.
-    # In a real-world scenario, you might need to send different data to each recipient.
-    
-    r = recipients[0] # Use the first recipient's data for the template
+    r = recipients[0]
     name = (r.get("name") or "").strip() or "Customer"
     area_str = r.get("area") or ""
-    
     
     payload_components = {}
     for p in template_def["placeholders"]:
@@ -217,7 +216,6 @@ def send_bulk_whatsapp_msg91(recipients: List[Dict[str, Any]], template_key: str
             payload_components[p["component"]] = {"type": "text", "value": area_str}
         elif p["key"] == "eta":
             payload_components[p["component"]] = {"type": "text", "value": eta_window}
-
 
     payload = {
         "integrated_number": MSG91_WHATSAPP_SENDER,
@@ -239,7 +237,9 @@ def send_bulk_whatsapp_msg91(recipients: List[Dict[str, Any]], template_key: str
         }
     }
 
-    logger.info(f"MSG91 Request Payload: {json.dumps(payload, indent=2)}")
+    logger.info(f"Sending bulk message to {len(to_numbers)} recipients via MSG91 with template '{template_key}'.")
+    # Avoid logging full payload in production if it contains PII, but for debugging it's useful.
+    # logger.debug(f"MSG91 Request Payload: {json.dumps(payload, indent=2)}")
 
     headers = {"authkey": MSG91_AUTH_KEY, "Content-Type": "application/json"}
     try:
@@ -253,11 +253,12 @@ def send_bulk_whatsapp_msg91(recipients: List[Dict[str, Any]], template_key: str
                 results.append((rcp["to"], True, "ok"))
             return results
         else:
+            logger.error(f"MSG91 API Error: {r.status_code} - {r.text}")
             for rcp in recipients:
                 results.append((rcp["to"], False, f"{r.status_code}: {r.text}"))
             return results
     except Exception as e:
-        logger.error(f"MSG91 Exception: {e}")
+        logger.exception(f"An exception occurred while calling MSG91 API.")
         for rcp in recipients:
             results.append((rcp["to"], False, str(e)))
         return results
