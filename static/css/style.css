@@ -116,7 +116,28 @@ body.light-mode .sidebar-toggle:hover { background: rgba(0,0,0,0.05) !important;
 
 .brand-text h1{ font-size:1.25rem; margin:0; color: var(--header-ink); }
 .subtitle{ color: var(--ink); opacity: 0.9; font-size:.95rem; margin-top:2px; }
-.form-check-label i { color: var(--header-ink); }
+
+/* Theme Toggle Button */
+.btn-theme-toggle {
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+.btn-theme-toggle:hover {
+  background-color: rgba(128, 128, 128, 0.1);
+  color: var(--ink);
+}
+.btn-theme-toggle i {
+  font-size: 1.1rem;
+}
 
 /* Sidebar */
 .sidebar.offcanvas-start {

@@ -156,23 +156,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const themeToggle = document.getElementById("themeToggle");
-  const themeIcon = document.querySelector('label[for="themeToggle"] i');
 
-  function setTheme(isLight) {
-    document.body.classList.toggle("light-mode", isLight);
-    themeIcon.className = isLight ? "bi bi-brightness-high-fill" : "bi bi-moon-stars-fill";
-    localStorage.setItem("theme", isLight ? "light" : "dark");
-    if (themeToggle) themeToggle.checked = isLight;
+  // Theme state, default to dark
+  let isLight = localStorage.getItem("theme") === "light";
+
+  function setTheme(light) {
+    document.body.classList.toggle("light-mode", light);
+    if (themeToggle) {
+      themeToggle.innerHTML = light ? '<i class="bi bi-brightness-high-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
+    }
+    localStorage.setItem("theme", light ? "light" : "dark");
+    isLight = light;
   }
 
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme) {
-    setTheme(savedTheme === "light");
-  }
+  // Set initial theme
+  setTheme(isLight);
 
   if (themeToggle) {
-    themeToggle.addEventListener("change", () => {
-      setTheme(themeToggle.checked);
+    themeToggle.addEventListener("click", () => {
+      setTheme(!isLight);
     });
   }
 
