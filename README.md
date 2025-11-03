@@ -1,5 +1,9 @@
 # KGM Cables Notification System
 
+<div align="center">
+  <img src="static/img/logo.png" alt="KGM Cables Logo" width="150">
+</div>
+
 The KGM Cables Notification System is a simple, local web application designed for the owner of the KGM Cables television network. It provides a user-friendly interface to send bulk notifications to customers during a service outage.
 
 ## Features
