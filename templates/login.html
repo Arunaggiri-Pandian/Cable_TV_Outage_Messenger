@@ -44,6 +44,13 @@
   </style>
 </head>
 <body class="login-page">
+  <div class="position-absolute top-0 end-0 p-3">
+    <button id="themeToggle" class="btn-theme-toggle">
+      <i id="themeIcon" class="bi bi-moon-stars-fill"></i>
+      <span id="themeText">Dark</span>
+    </button>
+  </div>
+
   <div class="card login-card">
     <div class="login-header">
       <img src="/static/img/logo.png" alt="KGM Cables" style="height: 50px; margin-bottom: 0.5rem;">
@@ -71,13 +78,33 @@
   </div>
 
   <script>
-    // Basic theme detection to prevent flash of wrong theme
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light") {
-      document.body.classList.add("light-mode");
+    // --- Theme Toggle Logic ---
+    const themeToggle = document.getElementById("themeToggle");
+    let isLight = localStorage.getItem("theme") === "light";
+
+    function setTheme(light) {
+      const themeIcon = document.getElementById("themeIcon");
+      const themeText = document.getElementById("themeText");
+
+      document.body.classList.toggle("light-mode", light);
+      if (themeIcon) {
+        themeIcon.className = light ? 'bi bi-brightness-high-fill' : 'bi bi-moon-stars-fill';
+      }
+      if (themeText) {
+        themeText.textContent = light ? 'Light' : 'Dark';
+      }
+      localStorage.setItem("theme", light ? "light" : "dark");
+      isLight = light;
+    }
+    setTheme(isLight); // Set initial theme
+
+    if (themeToggle) {
+      themeToggle.addEventListener("click", () => {
+        setTheme(!isLight);
+      });
     }
 
-    // Password visibility toggle
+    // --- Password Visibility Toggle ---
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('passwordInput');
     const toggleIcon = document.getElementById('toggleIcon');
