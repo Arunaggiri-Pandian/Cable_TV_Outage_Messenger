@@ -487,9 +487,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     } catch (e) {
       // If the session expired, notify the user and start a countdown to reload.
-      // The user can change the countdown timer here.
-      // The value is in seconds.
-      let countdown = 1800; // 30 minutes
+      let countdown = 5;
       const updateMessage = () => {
         const secondsText = countdown === 1 ? "second" : "seconds";
         setStatus("warn", `Your session has expired. Redirecting in ${countdown} ${secondsText}...`);

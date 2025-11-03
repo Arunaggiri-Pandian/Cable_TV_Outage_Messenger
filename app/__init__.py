@@ -16,8 +16,8 @@ def create_app():
     # Use a stable secret key from the environment for session persistence
     app.secret_key = os.environ.get('SECRET_KEY')
     
-    # Set session lifetime for testing
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=10)
+    # Set session lifetime to 30 minutes
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
     from . import routes
     app.register_blueprint(routes.bp)

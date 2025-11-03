@@ -93,18 +93,18 @@ The `--reload` flag tells Gunicorn to watch for file changes, similar to the dev
 
 ### Session Timeout
 
-The application has a session timeout feature that automatically reloads the page after a period of inactivity. You can customize this timeout by editing a single file.
+The application has a session timeout feature that automatically logs the user out after a period of inactivity. You can customize this timeout by editing a single file.
 
-*   **File to Edit**: `static/js/script.js`
-*   **Variable to Change**: `countdown`
+*   **File to Edit**: `app/__init__.py`
+*   **Configuration to Change**: `PERMANENT_SESSION_LIFETIME`
 
-To change the timeout, open the `static/js/script.js` file and find the following line of code:
+To change the timeout, open the `app/__init__.py` file and find the following line of code:
 
-```javascript
-let countdown = 1800; // 30 minutes
+```python
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 ```
 
-You can change the value of `countdown` to any number of seconds you prefer. For example, to set the timeout to 1 hour, you would change it to `3600`.
+You can change the value to any duration you prefer using `timedelta`. For example, to set the timeout to 1 hour, you would change it to `timedelta(hours=1)`.
 
 ## Deployment
 
